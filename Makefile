@@ -18,9 +18,8 @@ clean:
 	rm -f $(OBJECTS)
 
 main: $(OBJECTS)
-	echo $(SOURCES)
-	echo $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(OBJECT_DIR)%.o: $(SOURCE_DIR)%.c
+	mkdir -p $(OBJECT_DIR)
 	$(CC) $(CFLAGS) -c $^ -o $@
