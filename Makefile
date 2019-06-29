@@ -1,5 +1,6 @@
 CC := gcc
 CFLAGS := -Wall -Wextra
+LDFLAGS := -ldl
 
 SOURCE_DIR := src/
 INCLUDE_DIR := include/
@@ -18,7 +19,7 @@ clean:
 	rm -f $(OBJECTS)
 
 main: $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(OBJECT_DIR)%.o: $(SOURCE_DIR)%.c
 	mkdir -p $(OBJECT_DIR)
