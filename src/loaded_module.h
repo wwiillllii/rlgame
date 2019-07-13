@@ -14,8 +14,8 @@ public:
 	LoadedModule(std::string path);
 	~LoadedModule();
 	
-	operator=(LoadedModule & other) = delete;
-	operator=(LoadedModule && other) = delete;
+	LoadedModule & operator=(LoadedModule & other) = delete;
+	LoadedModule & operator=(LoadedModule && other) = delete;
 	LoadedModule(LoadedModule & other) = delete;
 	LoadedModule(LoadedModule && other) = delete;
 	
@@ -25,4 +25,4 @@ public:
 private:
 	native_module_t handle;
 	std::string path;
-}
+};
