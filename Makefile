@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra
+CFLAGS := -std=c++11 -Wall -Wextra
 LDFLAGS := -ldl
 
 SOURCE_DIR := src/
@@ -8,19 +8,19 @@ OBJECT_DIR := obj/
 
 CFLAGS := $(CFLAGS) -I$(INCLUDE_DIR)
 
-SOURCES := $(shell find $(SOURCE_DIR) -name *.c)
+SOURCES := $(shell find $(SOURCE_DIR) -name *.cpp)
 OBJECTS := $(subst $(SOURCE_DIR), $(OBJECT_DIR), $(SOURCES))
-OBJECTS := $(OBJECTS:.c=.o)
+OBJECTS := $(OBJECTS:.cpp=.o)
 
 all: main
 
 clean:
-	rm main
+	rm -f main
 	rm -f $(OBJECTS)
 
 main: $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-$(OBJECT_DIR)%.o: $(SOURCE_DIR)%.c
+$(OBJECT_DIR)%.o: $(SOURCE_DIR)%.cpp
 	mkdir -p $(OBJECT_DIR)
 	$(CC) $(CFLAGS) -c $^ -o $@
