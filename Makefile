@@ -1,6 +1,6 @@
 CC := gcc
 CFLAGS := -std=c++11 -Wall -Wextra
-LDFLAGS := -ldl
+LDFLAGS := -lstdc++ -ldl
 
 SOURCE_DIR := src/
 INCLUDE_DIR := include/
