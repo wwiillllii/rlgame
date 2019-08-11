@@ -1,10 +1,5 @@
 #include <string>
-
-#ifdef __linux__
-
-#else
-#error Unsupported OS! (Or you are not compiling with gcc).
-#endif
+#include <vector>
 
 class Directory{
 public:
@@ -16,7 +11,10 @@ public:
 	Directory & operator=(Directory & other) = delete;
 	Directory & operator=(Directory && other) = delete;
 
+	const std::vector<std::string> & getFiles() const;
+	const std::vector<std::string> & getSubdirs() const;
 	
 private:
-	
+	std::vector<std::string> files;
+	std::vector<std::string> subdirs;
 };
