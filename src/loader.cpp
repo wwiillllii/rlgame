@@ -12,8 +12,22 @@ Loader::Loader() :
 
 Loader::~Loader(){}
 
-void Loader::loadFromDir(std::string dir_path){
-	// TODO
+void Loader::loadModule(std::string path){
+	loaded_modules.push_back(path);
+}
+
+void Loader::loadFromDir(std::string dir_path, size_t recursion_level){
+	Directory dir(dir_path);
+	
+	for (auto file : dir.getFiles())
+		loadModule(file);
+	
+	if (recursion_level != 0){
+		if (recursion_level != ((unsigned size_t)-1))
+			recursion_level--;
+		for (auto subdir : dir.getSubdirs())
+			loadFromDir(subdir, recursion_level);
+	}
 }
 
 size_t Loader::loadedModuleCount() const{
