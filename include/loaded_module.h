@@ -9,6 +9,8 @@
 	#error Unsupported OS! (Or you are not compiling with gcc).
 #endif
 
+#include "module.h"
+
 class LoadedModule{
 public:
 	LoadedModule(std::string path);
@@ -16,6 +18,12 @@ public:
 
 	bool isLoaded() const;
 	std::string getPath() const;
+
+	const module_info_t* getInfo(Loader & loader);
+	bool initSelf(Loader & loader);
+	bool initOthers(Loader & loader);
+	bool finalizeOthers(Loader & loader);
+	bool finalizeSelf(Loader & loader);
 
 private:
 	native_module_t handle;

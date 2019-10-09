@@ -5,8 +5,9 @@ LDFLAGS := -lstdc++ -ldl
 SOURCE_DIR := src/
 INCLUDE_DIR := include/
 OBJECT_DIR := obj/
+API_DIR := api/
 
-CFLAGS := $(CFLAGS) -I$(INCLUDE_DIR)
+CFLAGS := $(CFLAGS) -I$(INCLUDE_DIR) -I$(API_DIR)
 
 SOURCES := $(shell find $(SOURCE_DIR) -name *.cpp)
 OBJECTS := $(subst $(SOURCE_DIR), $(OBJECT_DIR), $(SOURCES))
