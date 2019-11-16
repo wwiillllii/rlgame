@@ -26,5 +26,5 @@ private:
 	void modulesInitOthers();
 	void modulesInitFinish();
 
-	std::vector<LoadedModule> loaded_modules;
+	std::vector<LoadedModule*> loaded_modules;
 };

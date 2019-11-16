@@ -22,6 +22,9 @@ clean:
 main: $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
+modules/modA.so: modules/src/modA.cpp
+	$(CC) $(CFLAGS) modules/modA.cpp -fPIC -shared -o modules/modA.so
+
 $(OBJECT_DIR)%.o: $(SOURCE_DIR)%.cpp
-	mkdir -p $(OBJECT_DIR)
+	@mkdir -p $(OBJECT_DIR)
 	$(CC) $(CFLAGS) -c $^ -o $@

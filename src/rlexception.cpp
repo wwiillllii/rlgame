@@ -6,24 +6,30 @@ RLException::RLException(
 		std::string what,
 		std::string why,
 		std::string where) : 
-		_what(what),
+		__what(what),
 		_why(why),
-		_where(where)
+		_where(where),
+		full_messasge("\nwhat: " + what + "why: " + why + "where: " + where)
 		{}
 
-std::string RLException::what() const noexcept{
-	return _what.c_str();
+
+const char* RLException::what() const noexcept{
+	return this->full_messasge.c_str();
+}
+
+std::string RLException::_what() const noexcept{
+	return __what;
 }
 std::string RLException::why() const noexcept{
-	return _why.c_str();
+	return _why;
 }
 std::string RLException::where() const noexcept{
-	return _where.c_str();
+	return _where;
 }
 
 std::string RLException::description() const noexcept{
 	std::string _description = std::string();
-	_description += "what: " + what();
+	_description += "what: " + _what();
 	_description += "why: " + why();
 	_description += "where: " + where();
 	return _description.c_str();

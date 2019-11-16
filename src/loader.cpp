@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "loader.h"
 #include "directory.h"
 
@@ -10,10 +12,16 @@ Loader::Loader() :
 	loaded_modules()
 {}
 
-Loader::~Loader(){}
+Loader::~Loader(){
+	// TODO: de-init modules (in reverse init order) before deleting them.
+	// TODO: or just make modules de-init their dependencies.
+	for (LoadedModule * module : loaded_modules)
+		delete module;
+	loaded_modules.clear();
+}
 
 void Loader::loadModule(std::string path){
-	loaded_modules.push_back(path);
+	loaded_modules.push_back(new LoadedModule(path));
 }
 
 void Loader::loadFromDir(std::string dir_path, size_t recursion_level){
@@ -32,6 +40,14 @@ void Loader::loadFromDir(std::string dir_path, size_t recursion_level){
 
 size_t Loader::loadedModuleCount() const{
 	return this->loaded_modules.size();
+}
+
+void Loader::runModules(){
+	// TODO: implement this function properly.
+	for (LoadedModule * module : this->loaded_modules){
+		const module_info_t* info = module->getInfo();
+		std::cout << info->module_name << std::endl;
+	}
 }
 
 #else

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <map>
+
+#include "module.h"
 
 #ifdef __linux__
 	#include <dlfcn.h>
@@ -9,23 +12,29 @@
 	#error Unsupported OS! (Or you are not compiling with gcc).
 #endif
 
-#include "module.h"
+class Loader;
 
 class LoadedModule{
 public:
-	LoadedModule(std::string path);
+	explicit LoadedModule(std::string path);
 	~LoadedModule();
 
 	bool isLoaded() const;
 	std::string getPath() const;
 
-	const module_info_t* getInfo(Loader & loader);
-	bool initSelf(Loader & loader);
-	bool initOthers(Loader & loader);
-	bool finalizeOthers(Loader & loader);
-	bool finalizeSelf(Loader & loader);
+	const module_info_t* getInfo() const;
+	bool initSelf();
+	bool initOthers();
+	bool finalizeOthers();
+	bool finalizeSelf();
+
+	std::string getName() const;
+	uint32_t getAPIVersion() const;
 
 private:
+	void * getFunction(std::string name) const;
+
+	mutable std::map<std::string, void*> functions;
 	native_module_t handle;
 	std::string path;
 };
