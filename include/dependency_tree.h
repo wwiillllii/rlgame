@@ -27,6 +27,6 @@ private:
 	void sort();
 
 	std::vector<ModuleLoadOrderInfo> modules;
-	unsigned int iterators;
+	mutable unsigned int iterators;
 };
 
