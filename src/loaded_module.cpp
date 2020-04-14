@@ -10,7 +10,8 @@ using API_getInfo_t = const module_info_t* (*)();
 
 LoadedModule::LoadedModule(std::string path) :
 	handle(nullptr),
-	path(path)
+	path(path),
+	info(nullptr)
 {
 	dlerror();
 	this->handle = dlopen(this->path.c_str(), RTLD_LAZY);
@@ -20,6 +21,9 @@ LoadedModule::LoadedModule(std::string path) :
 		std::string(error) + "\n",
 		"LoadedModule::LoadedModule(std::string path)\n"
 	);
+		
+	API_getInfo_t API_getInfo = (API_getInfo_t)this->getFunction("API_getInfo");
+	info = API_getInfo();
 }
 
 LoadedModule::~LoadedModule(){
@@ -59,8 +63,7 @@ void * LoadedModule::getFunction(std::string name) const{
 
 
 const module_info_t* LoadedModule::getInfo() const{
-	API_getInfo_t API_getInfo = (API_getInfo_t)this->getFunction("API_getInfo");
-	return API_getInfo();
+	return info;
 }
 
 std::string LoadedModule::getName() const{

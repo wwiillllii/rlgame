@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "loaded_module.h"
+#include "dependency_tree.h"
 
 class Loader{
 public:
@@ -26,5 +27,5 @@ private:
 	void modulesInitOthers();
 	void modulesInitFinish();
 
-	std::vector<LoadedModule*> loaded_modules;
+	DependencyTree loaded_modules;
 };

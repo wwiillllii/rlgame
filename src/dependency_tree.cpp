@@ -71,7 +71,11 @@ void DependencyTree::addModule(LoadedModule * module){
 	this->modules.push_back(module);
 }
 
-ModuleLoadOrderInfoIterator DependencyTree::cbegin() noexcept{
+size_t DependencyTree::size() const noexcept{
+	return modules.size();
+}
+
+ModuleLoadOrderInfoIterator DependencyTree::begin() noexcept{
 	sort();
 	return DependencyTreeIterator(
 		this->modules.cbegin(),
@@ -79,7 +83,7 @@ ModuleLoadOrderInfoIterator DependencyTree::cbegin() noexcept{
 	);
 }
 
-ModuleLoadOrderInfoIterator DependencyTree::cend() noexcept{
+ModuleLoadOrderInfoIterator DependencyTree::end() noexcept{
 	sort();
 	return DependencyTreeIterator(
 		this->modules.cend(),

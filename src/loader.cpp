@@ -15,13 +15,12 @@ Loader::Loader() :
 Loader::~Loader(){
 	// TODO: de-init modules (in reverse init order) before deleting them.
 	// TODO: or just make modules de-init their dependencies.
-	for (LoadedModule * module : loaded_modules)
+	for (auto module : loaded_modules)
 		delete module;
-	loaded_modules.clear();
 }
 
 void Loader::loadModule(std::string path){
-	loaded_modules.push_back(new LoadedModule(path));
+	loaded_modules.addModule(new LoadedModule(path));
 }
 
 void Loader::loadFromDir(std::string dir_path, size_t recursion_level){

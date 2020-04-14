@@ -16,8 +16,9 @@ public:
 	~DependencyTree();
 
 	void addModule(LoadedModule * mod);
-	ModuleLoadOrderInfoIterator cbegin() noexcept;
-	ModuleLoadOrderInfoIterator cend() noexcept;
+	size_t size() const noexcept;
+	ModuleLoadOrderInfoIterator begin() noexcept;
+	ModuleLoadOrderInfoIterator end() noexcept;
 
 private:
 	void sort();

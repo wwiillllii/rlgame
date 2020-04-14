@@ -43,4 +43,5 @@ private:
 	mutable std::map<std::string, void*> functions;
 	native_module_t handle;
 	std::string path;
+	const module_info_t * info;
 };
