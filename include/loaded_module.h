@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include "module.h"
 
@@ -30,6 +31,11 @@ public:
 
 	std::string getName() const;
 	uint32_t getAPIVersion() const;
+
+	bool areDependenciesSatisfied(
+		std::vector<LoadedModule *>::iterator start,
+		std::vector<LoadedModule *>::iterator end
+	);
 
 private:
 	void * getFunction(std::string name) const;

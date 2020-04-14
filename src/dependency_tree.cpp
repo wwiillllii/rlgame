@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <vector>
+#include <string.h>
+#include <iostream> // TODO: Remove
+
 #include "dependency_tree.h"
 #include "rlexception.h"
 
@@ -6,6 +11,31 @@
 
 
 using ModuleLoadOrderInfoIterator = DependencyTree::ModuleLoadOrderInfoIterator;
+using ModuleLoadOrderInfoList = DependencyTree::ModuleLoadOrderInfoList;
+
+class CounterLock{
+public:
+	CounterLock(unsigned int * counter_ptr) : counter_ptr(counter_ptr){
+		*counter_ptr += 1;
+	}
+
+	~CounterLock() noexcept(false){
+		if (counter_ptr == nullptr) throw RLException(
+			"Lowering counter failed\n",
+			"Pointer to counter not set\n",
+			"CounterLock::~CounterLock()\n"
+		);
+		if (*counter_ptr == 0) throw RLException(
+			"Lowering counter failed\n",
+			"Counter is already zero\n",
+			"CounterLock::~CounterLock()\n"
+		);
+		*counter_ptr -= 1;
+	}
+
+private:
+	unsigned int * counter_ptr;
+};
 
 class DependencyTreeIterator : public ModuleLoadOrderInfoIterator{
 public:
@@ -14,95 +44,89 @@ public:
 		unsigned int * iterator_count_ptr
 	) :
 		ModuleLoadOrderInfoIterator(base),
-		iterator_count_ptr(iterator_count_ptr)
-	{
-		*iterator_count_ptr += 1;
-	}
+		lock(CounterLock(iterator_count_ptr))
+	{}
 
-	~DependencyTreeIterator(){
-		if (iterator_count_ptr == nullptr) throw RLException(
-			"Lowering iterator count of DependencyTree failed\n",
-			"Pointer to iterator count not set\n",
-			"DependencyTreeIterator::~DependencyTreeIterator()\n"
-		);
-		if (*iterator_count_ptr == 0) throw RLException(
-			"Lowering iterator count of DependencyTree failed\n",
-			"Iterator count is already zero\n",
-			"DependencyTreeIterator::~DependencyTreeIterator()\n"
-		);
-		*iterator_count_ptr -= 1;
-	}
-
-	module_info_t * operator*(){
-		return this->ModuleLoadOrderInfoIterator::operator*().module;
+	LoadedModule * operator*(){
+		return this->ModuleLoadOrderInfoIterator::operator*();
 	}
 
 private:
-	unsigned int * iterator_count_ptr;
+	CounterLock lock;
 };
 
 
 //- ---------------------- DependencyTree Implementation -----------------------
 
 
-DependencyTree::DependencyTree(){
-	// TODO: Implement
+DependencyTree::DependencyTree() : 
+	iterators(0),
+	sorted(true)
+{}
+
+DependencyTree::~DependencyTree(){}
+
+void DependencyTree::addModule(LoadedModule * module){
+	sorted = false;
+	this->modules.push_back(module);
 }
 
-DependencyTree::~DependencyTree(){
-	// TODO: Implement
-}
-
-void DependencyTree::addModule(module_info_t * mod){
-	this->modules.push_back({
-		.module = mod,
-		.priority = 0,
-		.visited = false,
-	});
-}
-
-ModuleLoadOrderInfoIterator DependencyTree::cbegin() const noexcept{
+ModuleLoadOrderInfoIterator DependencyTree::cbegin() noexcept{
+	sort();
 	return DependencyTreeIterator(
 		this->modules.cbegin(),
 		&this->iterators
 	);
 }
 
-ModuleLoadOrderInfoIterator DependencyTree::cend() const noexcept{
+ModuleLoadOrderInfoIterator DependencyTree::cend() noexcept{
+	sort();
 	return DependencyTreeIterator(
 		this->modules.cend(),
 		&this->iterators
 	);
 }
 
-
-/*
-def deps_satisfied(test, start, end):
-	for dep in test.deps:
-		for compared in range(start, end):
-			if dep == compared:
-				break
-		else:
-			return False
-	return True
-
-def find_loadable(start, next, end):
-	for test in range(next, end):
-		if deps_satisfied(test, start, next):
-			return test
-	raise MissingDeps(test)
-
-for next_location in range(start, end):
-	loadable = find_loadable(start, next_location, end)
-	swap(loadable, next_location)
-*/
-
-
-bool areDependenciesSatisfied(module_dependency_t * deps, it start, it end){
-	
-}
-
 void DependencyTree::sort(){
-	// TODO: Implement
+	if (sorted) return;
+
+	CounterLock lock(&this->iterators);
+	auto buffer_start = modules.begin();
+	auto buffer_end = modules.end();
+	LoadedModule * tmp;
+	std::string unloadable_modules;
+
+	std::cout << "Sorting modules..." << std::endl;
+	// For all positions in [start, end)
+	for (auto next_position = buffer_start; next_position != buffer_end; next_position++){
+		unloadable_modules = "";
+		// Find a candidate from [position, end)
+		auto next_candidate = next_position;
+		for (;next_candidate != buffer_end; next_candidate++){
+			unloadable_modules += "\t";
+			unloadable_modules += (*next_candidate)->getName();
+			unloadable_modules += "\n";
+			// Whose dependencies are met in [start, position)
+			if ((*next_candidate)->areDependenciesSatisfied(buffer_start, next_position)){
+				// And the insert the candidate into the position.
+				std::cout << "Next module: " << (*next_candidate)->getName() << std::endl;
+				tmp = *next_candidate;
+				*next_candidate = *next_position;
+				*next_position = tmp;
+				break;
+			}
+		}
+		// If no valid candidate was found for the position, the sorting failed.
+		if (next_candidate == buffer_end){
+			throw RLException(
+				"Sorting module load order failed\n",
+				"Some modules have unmet dependencies:\n" + unloadable_modules,
+				"DependencyTree::sort()\n"
+			);
+		}
+	}
+
+	std::cout << "Done sorting!" << std::endl;
+	sorted = true;
 }
 

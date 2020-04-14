@@ -4,29 +4,26 @@
 #include <vector>
 #include <iterator>
 
-#include <module.h>
+#include "module.h"
+#include "loaded_module.h"
 
 class DependencyTree{
 public:
-	using ModuleLoadOrderInfo=struct {
-		module_info_t* module;
-		unsigned int priority;
-		bool visited;
-	};
-	using ModuleLoadOrderInfoList = std::vector<ModuleLoadOrderInfo>;
+	using ModuleLoadOrderInfoList = std::vector<LoadedModule *>;
 	using ModuleLoadOrderInfoIterator = ModuleLoadOrderInfoList::const_iterator;
 
 	DependencyTree();
 	~DependencyTree();
 
-	void addModule(module_info_t * mod);
-	ModuleLoadOrderInfoIterator cbegin() const noexcept;
-	ModuleLoadOrderInfoIterator cend() const noexcept;
+	void addModule(LoadedModule * mod);
+	ModuleLoadOrderInfoIterator cbegin() noexcept;
+	ModuleLoadOrderInfoIterator cend() noexcept;
 
 private:
 	void sort();
 
-	std::vector<ModuleLoadOrderInfo> modules;
+	ModuleLoadOrderInfoList modules;
 	mutable unsigned int iterators;
+	bool sorted;
 };
 

@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#define MODULE_NAME_MAX_LENGTH 255
+
 typedef struct{
 	const char * module_name;
 	uint32_t api_version;
